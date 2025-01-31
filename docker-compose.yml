@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg17 # Imagen de PostgreSQL con pgvector preinstalado
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5434:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin     
+
+  backend:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydatabase
+      OPENAI_API_KEY: "tu_api_key"
+    ports:
+      - "5000:5000"
