@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Embeddings</title>
+</head>
+<body>
+    <h1>Generador de Embeddings</h1>
+    
+    <!-- Formulario para ingresar el texto -->
+    <form action="/get_embedding" method="post">
+        <label for="prompt">Ingrese un texto:</label>
+        <input type="text" id="prompt" name="prompt" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <!-- Mostrar el resultado del embedding si está disponible -->
+    {% if embedding %}
+        <h2>Embedding generado:</h2>
+        <pre>{{ embedding }}</pre>
+    {% endif %}
+</body>
+</html>
+

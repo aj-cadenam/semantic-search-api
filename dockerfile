@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando para correr la app con Poetry
-CMD ["poetry", "run", "python", "app.py"]
+CMD ["poetry", "run", "python", "app/app.py"]
