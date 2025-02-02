@@ -11,8 +11,8 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Instala dependencias con Poetry sin entorno virtual, Usa poetry install --no-root --no-dev para evitar instalar dependencias innecesarias dentro del contenedor.Copia pyproject.toml y poetry.lock antes que el código para optimizar la caché de Docker.
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
-RUN poetry install --no-root
 
 
 # Copia el código de la aplicación

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "package1"  # Sin espacios
+name = "semanticsearch" 
 version = "0.1.0"
-description = "Proyecto de búsqueda semántica con Flask y PostgreSQL"
+description = "semanticsearch  is a simple Flask app that uses OpenAI's GPT-3 to search for similar text in a PostgreSQL database."
 authors = ["Javier Cadena <aj-cadena@outlook.com>"]
 readme = "README.md"
 

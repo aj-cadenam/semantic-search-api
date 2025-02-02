@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
+import os
 from openai import OpenAI
 
-client = OpenAI(api_key="xxx")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import numpy as np
 import json
 import psycopg2
@@ -11,11 +12,10 @@ app = Flask(__name__)
 
 # Configurar la clave de API de OpenAI (asegúrate de que la clave está configurada en las variables de entorno)
 
-# Configurar la conexión a la base de datos PostgreSQL
 DB_PARAMS = {
-    "dbname": "tu_base_de_datos",
-    "user": "tu_usuario",
-    "password": "tu_contraseña",
+    "dbname": "mydatabase",
+    "user": "postgres",
+    "password": "1234",
     "host": "localhost",
     "port": "5432",
 }
