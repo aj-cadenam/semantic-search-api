@@ -563,13 +563,14 @@ realtime = ["websockets (>=13,<15)"]
 
 [[package]]
 name = "pgvector"
-version = "0.2.5"
+version = "0.3.6"
 description = "pgvector support for Python"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "pgvector-0.2.5-py2.py3-none-any.whl", hash = "sha256:5e5e93ec4d3c45ab1fa388729d56c602f6966296e19deee8878928c6d567e41b"},
+    {file = "pgvector-0.3.6-py3-none-any.whl", hash = "sha256:f6c269b3c110ccb7496bac87202148ed18f34b390a0189c783e351062400a75a"},
+    {file = "pgvector-0.3.6.tar.gz", hash = "sha256:31d01690e6ea26cea8a633cde5f0f55f5b246d9c8292d68efdef8c22ec994ade"},
 ]
 
 [package.dependencies]
@@ -949,4 +950,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "32ce8a2cc7084b8cbe78d499e581fdb65f2f9a3da505536fe27a52a0928e6b90"
+content-hash = "02dcf37c7408a21dd9194cce4adea4d2e14a8df17e7f06081b95a61c569f55fb"

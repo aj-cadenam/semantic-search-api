@@ -1,29 +1,34 @@
-version: '3.8'
+
 
 services:
   db:
-    image: pgvector/pgvector:pg17 # Imagen de PostgreSQL con pgvector preinstalado
-    restart: always
+    image: pgvector/pgvector:pg17
+    container_name: class-pgvector
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
     ports:
-      - "5434:5432"
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin     
+      - 5434:5432
+    networks:
+      - app-network
 
   backend:
     build: .
-    depends_on:
-      - db
+    container_name: flask-container
     environment:
-      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydatabase
-      OPENAI_API_KEY: "tu_api_key"
+      - DATABASE_URL=postgresql://postgres:1234@db:5432/embeddings
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
     ports:
       - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

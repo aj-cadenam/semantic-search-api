@@ -1,18 +1,19 @@
 # Usa una imagen base de Python optimizada
-FROM python:3.11
+FROM python:3.12-slim
 
 # Instala Poetry a nivel global
 RUN pip install poetry
 
 # Establece el directorio de trabajo
-WORKDIR /app
+#WORKDIR /app
 
 # Copia los archivos de Poetry antes del código para aprovechar caché
 COPY pyproject.toml poetry.lock ./
 
-# Instala dependencias con Poetry sin entorno virtual, Usa poetry install --no-root --no-dev para evitar instalar dependencias innecesarias dentro del contenedor.Copia pyproject.toml y poetry.lock antes que el código para optimizar la caché de Docker.
+# Instala las dependencias usando Poetry sin entorno virtual y sin dependencias de desarrollo
+#RUN poetry install --no-root
 RUN curl -sSL https://install.python-poetry.org | python3 -
-
+RUN poetry install
 
 
 # Copia el código de la aplicación
@@ -22,4 +23,5 @@ COPY . .
 EXPOSE 5000
 
 # Comando para correr la app con Poetry
-CMD ["poetry", "run", "python", "app/app.py"]
+CMD ["poetry", "run", "python", "app.py"]
+

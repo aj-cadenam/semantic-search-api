@@ -2,32 +2,55 @@ from flask import Flask, render_template, request
 import os
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import numpy as np
 import json
 import psycopg2
+from psycopg2.extras import execute_values
 from psycopg2.extras import Json
+
+client = OpenAI(api_key="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")
+import numpy as np
 
 app = Flask(__name__)
 
 # Configurar la clave de API de OpenAI (asegúrate de que la clave está configurada en las variables de entorno)
 
 DB_PARAMS = {
-    "dbname": "mydatabase",
+    "dbname": "postgres",
     "user": "postgres",
     "password": "1234",
-    "host": "localhost",
+    "host": "class-pgvector",
     "port": "5432",
 }
+
 
 
 def connect_db():
     return psycopg2.connect(**DB_PARAMS)
 
 
+def create_table():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS embeddings (
+            id SERIAL PRIMARY KEY,
+            text TEXT NOT NULL,
+            embedding JSONB NOT NULL
+        )
+        """
+
+        
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
 @app.route("/")
 def index():
-    return render_template("./index.html")
+    return render_template("index.html")
 
 
 @app.route("/get_embedding", methods=["POST"])
@@ -63,6 +86,6 @@ def get_embedding():
     print(embedding_vector)
     return render_template("index.html", embedding=json.dumps(embedding_vector))
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    create_table()
+    app.run(debug=True, host="0.0.0.0", port=5000)
