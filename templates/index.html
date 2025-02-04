@@ -1,75 +1,133 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Embeddings </title>
+    <title>Embedding Generator</title>
     <style>
+        /* General styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
             padding: 20px;
         }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
         form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
             margin-bottom: 20px;
         }
+
         label {
-            font-weight: bold;
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #444;
         }
-        input, button {
-            margin-top: 5px;
+
+        input {
+            width: 100%;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #218838; /* Medium dark green */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #19692c; /* Darker green */
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
             width: 100%;
             max-width: 400px;
         }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
+
         li {
-            background: #f4f4f4;
-            margin: 5px 0;
+            background: #f8f9fa;
             padding: 10px;
+            margin-top: 5px;
             border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <h1>Embeddings con OpenAI y PostgreSQL</h1>
+    <h1>Semantic Search</h1>
 
-    <!-- Formulario para almacenar un embedding -->
-    <h2>Ingresar un texto para almacenar su embedding</h2>
+    <!-- Form to generate an embedding -->
+    <h2></h2>
     <form action="/get_embedding" method="post">
-        <label for="prompt">Ingrese un texto:</label>
+        <label for="prompt">Enter a text:</label>
         <input type="text" id="prompt" name="prompt" required>
-        <button type="submit">Generar y Almacenar Embedding</button>
+        <button type="submit">Generate Embedding</button>
     </form>
 
     {% if embedding %}
-        <h3>Embedding generado:</h3>
+        <h3>Generated Embedding:</h3>
         <pre>{{ embedding }}</pre>
     {% endif %}
 
-    <!-- Formulario para buscar textos similares -->
-    <h2>Buscar textos similares</h2>
+    <!-- Form to search for similar texts -->
+    <h2>Search for Similar Texts</h2>
     <form action="/get_similar" method="post">
-        <label for="search_prompt">Ingrese un texto:</label>
+        <label for="search_prompt">Enter a text:</label>
         <input type="text" id="search_prompt" name="prompt" required>
-        <button type="submit">Buscar Similares</button>
+        <button type="submit">Find Similar</button>
     </form>
 
     {% if similar_texts %}
-        <h3>Resultados similares encontrados:</h3>
+        <h3>Similar Results:</h3>
         <ul>
             {% for text in similar_texts %}
                 <li>{{ text }}</li>
@@ -79,5 +137,3 @@
 
 </body>
 </html>
-
-
