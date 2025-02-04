@@ -7,9 +7,14 @@ import json
 import psycopg2
 from psycopg2.extras import execute_values
 from psycopg2.extras import Json
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import numpy as np
+
+
+api_key = os.getenv("OPENAI_API_KEY")  # Obtiene la clave de las variables de entorno
+if not api_key:
+    raise ValueError("La variable de entorno OPENAI_API_KEY no está configurada")
+
+client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
 
@@ -23,8 +28,10 @@ DB_PARAMS = {
     "port": "5432",
 }
 
+
 def connect_db():
     return psycopg2.connect(**DB_PARAMS)
+
 
 def create_table():
     conn = connect_db()
@@ -35,20 +42,24 @@ def create_table():
 
     cursor.execute(
         """
-        CREATE TABLE IF NOT EXISTS vector_table (id bigserial PRIMARY KEY, embedding vector(1536));
+        CREATE TABLE IF NOT EXISTS vector_table (id bigserial PRIMARY KEY, keyword VARCHAR(100), embedding vector(1536));
         
         """
     )
     # Crear un índice para optimizar búsquedas de similitud con `pgvector`
-    cursor.execute("CREATE INDEX IF NOT EXISTS embedding_index ON vector_table USING ivfflat (embedding);")
+    cursor.execute(
+        "CREATE INDEX ON vector_table USING ivfflat (embedding vector_l2_ops) WITH (lists = 100);"
+    )
 
     conn.commit()
     cursor.close()
     conn.close()
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/get_embedding", methods=["POST"])
 def get_embedding():
@@ -72,16 +83,17 @@ def get_embedding():
     cursor = conn.cursor()
     cursor.execute(
         """
-        INSERT INTO vector_table (embedding) VALUES (%s)
+       
+        INSERT INTO vector_table (keyword, embedding) VALUES (%s, %s::vector)
         """,
-        (embedding_vector,),
+        (prompt, embedding_vector),
     )
     conn.commit()
     cursor.close()
     conn.close()
     print(embedding_vector)
     return render_template("index.html", embedding=json.dumps(embedding_vector))
-    
+
 
 @app.route("/get_similar", methods=["POST"])
 def get_similar():
@@ -89,7 +101,7 @@ def get_similar():
     Ruta que recibe un mensaje del usuario, genera su embedding y busca mensajes similares en PostgreSQL.
     """
     # Extraer el texto ingresado por el usuario en el formulario
-    prompt = request.form["prompt"]
+    prompt = request.form["prompt"] or request.form["predefined_prompt"]
 
     # Generar el embedding utilizando la API de OpenAI
     embedding_response = client.embeddings.create(
@@ -98,17 +110,28 @@ def get_similar():
 
     # Extraer el embedding del resultado de la API
     embedding_vector = embedding_response.data[0].embedding
+    formatted_embedding = f"({','.join(map(str, embedding_vector))})"
 
     # Buscar mensajes similares en PostgreSQL
     conn = connect_db()
     cursor = conn.cursor()
+    # Convertir el embedding a formato PostgreSQL
+
+    formatted_embedding = f"[{','.join(map(str, embedding_vector))}]"
+
     cursor.execute(
         """
-        SELECT * FROM vector_table ORDER BY embedding <-> %s LIMIT 5;
-
-       
+        SELECT keyword, 1 - (embedding <=> %s::vector) AS similarity
+        FROM vector_table
+        WHERE 1 - (embedding <=> %s::vector) >= 0.5
+        ORDER BY embedding <=> %s::vector
+        LIMIT 5;
         """,
-        (embedding_vector,),
+        (
+            formatted_embedding,
+            formatted_embedding,
+            formatted_embedding,
+        ),  # ✅ Pasar 3 valores correctos
     )
     results = cursor.fetchall()
     cursor.close()

@@ -3,23 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Embeddings</title>
+    <title>Generador de Embeddings </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, button {
+            margin-top: 5px;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Generador de Embeddings</h1>
-    
-    <!-- Formulario para ingresar el texto -->
+
+    <h1>Embeddings con OpenAI y PostgreSQL</h1>
+
+    <!-- Formulario para almacenar un embedding -->
+    <h2>Ingresar un texto para almacenar su embedding</h2>
     <form action="/get_embedding" method="post">
         <label for="prompt">Ingrese un texto:</label>
         <input type="text" id="prompt" name="prompt" required>
-        <button type="submit">Enviar</button>
+        <button type="submit">Generar y Almacenar Embedding</button>
     </form>
 
-    <!-- Mostrar el resultado del embedding si está disponible -->
     {% if embedding %}
-        <h2>Embedding generado:</h2>
+        <h3>Embedding generado:</h3>
         <pre>{{ embedding }}</pre>
     {% endif %}
+
+    <!-- Formulario para buscar textos similares -->
+    <h2>Buscar textos similares</h2>
+    <form action="/get_similar" method="post">
+        <label for="search_prompt">Ingrese un texto:</label>
+        <input type="text" id="search_prompt" name="prompt" required>
+        <button type="submit">Buscar Similares</button>
+    </form>
+
+    {% if similar_texts %}
+        <h3>Resultados similares encontrados:</h3>
+        <ul>
+            {% for text in similar_texts %}
+                <li>{{ text }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
 </body>
 </html>
+
 
