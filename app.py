@@ -23,35 +23,32 @@ DB_PARAMS = {
     "port": "5432",
 }
 
-
-
 def connect_db():
     return psycopg2.connect(**DB_PARAMS)
-
 
 def create_table():
     conn = connect_db()
     cursor = conn.cursor()
+
+    # Habilitar la extensión vector si no está habilitada
+    cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+
     cursor.execute(
         """
-        CREATE TABLE IF NOT EXISTS embeddings (
-            id SERIAL PRIMARY KEY,
-            text TEXT NOT NULL,
-            embedding JSONB NOT NULL
-        )
-        """
-
+        CREATE TABLE IF NOT EXISTS vector_table (id bigserial PRIMARY KEY, embedding vector(1536));
         
+        """
     )
+    # Crear un índice para optimizar búsquedas de similitud con `pgvector`
+    cursor.execute("CREATE INDEX IF NOT EXISTS embedding_index ON vector_table USING ivfflat (embedding);")
+
     conn.commit()
     cursor.close()
     conn.close()
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/get_embedding", methods=["POST"])
 def get_embedding():
@@ -75,16 +72,53 @@ def get_embedding():
     cursor = conn.cursor()
     cursor.execute(
         """
-        INSERT INTO embeddings (text, embedding)
-        VALUES (%s, %s)
+        INSERT INTO vector_table (embedding) VALUES (%s)
         """,
-        (prompt, Json(embedding_vector)),
+        (embedding_vector,),
     )
     conn.commit()
     cursor.close()
     conn.close()
     print(embedding_vector)
     return render_template("index.html", embedding=json.dumps(embedding_vector))
+    
+
+@app.route("/get_similar", methods=["POST"])
+def get_similar():
+    """
+    Ruta que recibe un mensaje del usuario, genera su embedding y busca mensajes similares en PostgreSQL.
+    """
+    # Extraer el texto ingresado por el usuario en el formulario
+    prompt = request.form["prompt"]
+
+    # Generar el embedding utilizando la API de OpenAI
+    embedding_response = client.embeddings.create(
+        model="text-embedding-ada-002", input=prompt
+    )
+
+    # Extraer el embedding del resultado de la API
+    embedding_vector = embedding_response.data[0].embedding
+
+    # Buscar mensajes similares en PostgreSQL
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT * FROM vector_table ORDER BY embedding <-> %s LIMIT 5;
+
+       
+        """,
+        (embedding_vector,),
+    )
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Extraer los textos de los resultados
+    similar_texts = [result[0] for result in results]
+    print(similar_texts)
+    return render_template("index.html", similar_texts=similar_texts)
+
 
 if __name__ == "__main__":
     create_table()
