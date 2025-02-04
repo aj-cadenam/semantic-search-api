@@ -22,7 +22,7 @@ services:
       - DATABASE_URL=postgresql://postgres:1234@db:5432/embeddings
       - FLASK_ENV=development
       - FLASK_APP=app.py
-      - OPENAI_API ="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"
+      
     ports:
       - "5000:5000"
     depends_on:
