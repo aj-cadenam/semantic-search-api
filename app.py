@@ -8,7 +8,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 from psycopg2.extras import Json
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import numpy as np
 
 app = Flask(__name__)
