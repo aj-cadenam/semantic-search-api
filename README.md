@@ -4,7 +4,9 @@
 
 # Descripción General
 
-Este proyecto es una API basada en Flask que procesa cadenas de texto de entrada, las convierte en **embeddings** utilizando el modelo `text-embedding-ada-002` de OpenAI, las almacena en **PostgreSQL** con **pgvector**, y realiza búsquedas de similitud utilizando **distancia coseno (`<=>`)**.
+Este proyecto es una API REST basada en Flask que permite almacenar y recuperar cadenas de texto de manera eficiente utilizando embeddings semánticos generados con OpenAI y almacenados en PostgreSQL con la extensión pgvector.
+
+La API implementa búsquedas por similitud mediante el operador <=>, que calcula la distancia coseno entre los embeddings almacenados y el embedding de consulta. Para mejorar la eficiencia y escalabilidad, se utiliza un enfoque de búsqueda aproximada:
 
 El sistema sigue una **arquitectura hexagonal**, asegurando modularidad y mantenibilidad. Utiliza **Poetry** para la gestión de dependencias y **Docker Compose** para ejecutar los servicios en contenedores, integrando OpenAI, Flask y PostgreSQL de manera eficiente.
 
@@ -31,19 +33,23 @@ El sistema sigue una **arquitectura hexagonal**, asegurando modularidad y manten
 
 ### 1️⃣ **Clonar el Repositorio**
 
-````bash
+```bash
 git clone <repository-url>
+```
 
 ### 2️⃣ **Configurar Variables de Entorno**
+
 Crear un archivo `.env` en la raíz del proyecto:
+
 ```env
 OPENAI_API_KEY=<tu_clave_api_openai>
+
 DB_NAME=mydatabase
 DB_USER=myuser
 DB_PASSWORD=mypassword
 DB_HOST=db
 DB_PORT=5432
-````
+```
 
 ### 3️⃣ **Instalar Dependencias con Poetry**
 
@@ -79,19 +85,29 @@ Esto realizará:
 4. **Los embeddings se almacenan** en PostgreSQL con `pgvector`.
 5. **Las búsquedas de similitud** se realizan utilizando el operador de distancia coseno (`<=>`).
 
+📌 Explicación del cálculo de similitud con pgvector
+
+embedding <=> %s::vector calcula la distancia de similitud entre el embedding en la base de datos y el proporcionado.
+
+1 - (embedding <=> %s::vector) convierte la distancia en una medida de similitud, donde 1 es idéntico y 0 es completamente diferente.
+
+WHERE 1 - (embedding <=> %s::vector) >= 0.5 filtra solo aquellos embeddings con una similitud de al menos 50%.
+
+ORDER BY embedding <=> %s::vector ordena los resultados del más similar al menos similar.
+
 ### **Endpoints**
 
-#### ** Generar y Almacenar Embeddings**
+🔹 Generar y Almacenar Embeddings
 
-```http
 POST /get_embedding
-```
 
-#### ** Buscar Textos Similares**
+Descripción: Este endpoint recibe un texto de entrada, genera su representación numérica (embedding) utilizando el modelo text-embedding-ada-002 de OpenAI y lo almacena en PostgreSQL con la extensión pgvector.
 
-```http
+🔹 Buscar Textos Similares
+
 POST /get_similar
-```
+
+Descripción: Este endpoint recibe un texto de entrada, genera su embedding y lo compara con los almacenados en la base de datos. Utiliza la distancia coseno (<=>) para encontrar los textos más similares y devolverlos ordenados por relevancia.
 
 ---
 
@@ -106,4 +122,4 @@ POST /get_similar
 
 ---
 
-🚀 **¡Ahora puedes comenzar a utilizar la API enviando solicitudes a `http://localhost:5000`!**
+**¡Puedes comenzar a utilizar la API enviando solicitudes a `http://localhost:5000`!**
