@@ -6,5 +6,5 @@ venv/
 .env
 # Docker
 *.log
-docker-compose.yml
+
 
