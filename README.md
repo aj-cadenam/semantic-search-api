@@ -31,16 +31,16 @@ El sistema sigue una **arquitectura hexagonal**, asegurando modularidad y manten
 
 ### 1️⃣ **Clonar el Repositorio**
 
-````
+````bash
 git clone <repository-url>
 
 ### 2️⃣ **Configurar Variables de Entorno**
 Crear un archivo `.env` en la raíz del proyecto:
 ```env
 OPENAI_API_KEY=<tu_clave_api_openai>
-DB_NAME=postgres
-DB_USER=postgres
-DB_PASSWORD=1234
+DB_NAME=mydatabase
+DB_USER=myuser
+DB_PASSWORD=mypassword
 DB_HOST=db
 DB_PORT=5432
 ````
@@ -87,26 +87,10 @@ Esto realizará:
 POST /get_embedding
 ```
 
-**Cuerpo de la Solicitud:**
-
-```json
-{
-  "prompt": "Texto de entrada de ejemplo"
-}
-```
-
 #### ** Buscar Textos Similares**
 
 ```http
 POST /get_similar
-```
-
-**Cuerpo de la Solicitud:**
-
-```json
-{
-  "prompt": "Buscar texto similar"
-}
 ```
 
 ---
