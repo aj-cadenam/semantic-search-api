@@ -34,7 +34,7 @@ El sistema sigue una **arquitectura hexagonal**, asegurando modularidad y manten
 ### 1️⃣ **Clonar el Repositorio**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/aj-cadenam/semantic-search-api.git
 ```
 
 ### 2️⃣ **Configurar Variables de Entorno**
@@ -44,10 +44,10 @@ Crear un archivo `.env` en la raíz del proyecto:
 ```env
 OPENAI_API_KEY=<tu_clave_api_openai>
 
-DB_NAME=mydatabase
-DB_USER=myuser
-DB_PASSWORD=mypassword
-DB_HOST=db
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=m1234
+DB_HOST=class-pgvector
 DB_PORT=5432
 ```
 
